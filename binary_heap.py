@@ -1,69 +1,73 @@
-'''
-
-'''
-
-class BinaryHeap: # Min-first heap
-
-  def __init__(self):
-    self.values = []
+"""
+        0
+   1          2
+ 3   4     5     6
+7 8 9 10 11 12 13 14
   
-  def add(self, value):
-    if self.count == 0:
-      self.values.append(value)
-    else:
-      i = len(self.values)
-      self.values.append(value)
-      while i > 0:
-        parentIndex = self.parentIndex(i)
-        if self.values[parentIndex] > self.values[i]:
-          self.swap(parentIndex, i)
-          i = parentIndex
-        else:
-          return
-  
-  def remove(self):
-    if self.count == 0:
-      raise ValueError()
-    ret = self.values[0]
-    i = 0
-    flag = True
-    while i * 2 + 1 < self.count:
-      l = i * 2 + 1
-      r = i * 2 + 2
-      if l < self.count and r < self.count:
-        if self.values[l] < self.values[r]:
-          self.values[i] = self.values[l]
-          i = l
-        else:
-          self.values[i] = self.values[r]
-          i = r
-      elif l < self.count:
-        self.values[i] = self.values[l]
-        i = l
-    self.values[i] = self.values[self.count - 1]
-    self.values.pop(-1)
-    return ret 
+"""
 
-  @property
-  def count(self):
-    return len(self.values)
+class BinaryHeap:
 
-  def swap(self, i, j):
-    tmp = self.values[i]
-    self.values[i] = self.values[j]
-    self.values[j] = tmp
+    def __init__(self):
+        self.values = []
 
-  def parentIndex(self, index):
-    return (index - 1) // 2
+    def parentIndex(self, index):
+        return (len(self.values) - 1) // 2
 
-def test1():
-  data = [8, 6, 7, 7, 5, 3, 0, 9, 1, 2, 4, 3, 5, 4, 7, 9, 0, 7, 8, 5, 3, 6, 2, 4, -5, 2, -1, -12]
-  heap = BinaryHeap()
-  for d in data:
-    heap.add(d)
-  ret = []
-  while heap.count:
-    ret.append(heap.remove())
-  print(ret)
+    def swap(self, i, j):
+        tmp = self.values[i]
+        self.values[i] = self.values[j]
+        self.values[j] = tmp
 
-test1()
+
+    def add(self, value):
+        if len(self.values) == 0:
+            self.values.append(value)
+            return
+        self.values.append(value)
+        i = len(self.values) - 1
+        while i >= 0 and self.values[i] < self.values[self.parentIndex(i)]:
+            self.swap(i, self.parentIndex(i))
+            i = self.parentIndex(i)
+
+    def remove(self):
+        if len(self.values) == 0:
+            raise ValueError("Cannot pop a min value")
+        ret = self.values[0]
+        i = 0
+        while i < len(self.values):
+            l = i * 2 + 1
+            r = i * 2 + 2
+            if l < len(self.values) and r < len(self.values):
+                if self.values[l] < self.values[r]:
+                    self.swap(i, l)
+                    i = l
+                else:
+                    self.swap(i, r)
+                    i = r
+            elif l < len(self.values):
+                self.swap(i, l)
+                i = l
+            elif r < len(self.values):
+                self.swap(i, r)
+                i = r
+            else:
+                break
+        if i >= len(self.values):
+            i = self.parentIndex(i)
+        self.swap(i, len(self.values) - 1)
+        return ret
+
+def testBinaryHeap():
+    values = [2, 5, 3, 1, 6, 7, 4, 5, 3, 7, 8, 9,6, 4,3,2, 1, 0]
+    sorts = sorted(values)
+    heap = BinaryHeap()
+    for v in values:
+        heap.add(v)
+    print(heap.values)
+    for v in values:
+        vv = heap.remove()
+        print(vv)
+
+testBinaryHeap()
+
